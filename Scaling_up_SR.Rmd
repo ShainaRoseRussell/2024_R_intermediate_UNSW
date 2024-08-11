@@ -104,7 +104,7 @@ For your analysis, you need to calculate the total number of records available f
 
 In words, describe what are the steps to solve the challenge: 
 
-- 
+- summarise?
 - 
 - 
 
@@ -117,6 +117,20 @@ How would you solve this problem using existing knowledge:
 Try solving this in R using new skills:
 
 ```{r, learner-solutions}
+
+species_counts <- penguins_combined %>%
+  group_by(species) %>%
+  summarise(Count = n())
+
+penguins_combined_with_counts <- penguins_combined %>%
+  left_join(species_counts, by = "species") 
+
+
+#penguins_combined_with_counts <- penguins_combined %>%
+  left_join(species_counts, by = "species") %>% 
+  select(Count)
+
+
 
 ```
 
@@ -199,9 +213,9 @@ We need to get compute the average bill and flipper dimensions using the `pengui
 
 In words, describe what are the steps to solve the challenge: 
 
-- 
-- 
-- 
+- calculate mean
+- cbind
+- match function for bill and flipper
 
 How would you solve this problem using existing knowledge: 
 
@@ -213,6 +227,14 @@ Try solving this in R using new skills:
 
 ```{r, learner-solutions}
 
+bill_lenght <- read.csv("data/penguin_sizes.csv")
+penquin_size_mean <- 
+
+unique(penguins_combined$species)
+
+penguins_combined <- penguins_combined %>%
+  
+  
 ```
 
 Demonstrator solutions: 
@@ -229,39 +251,39 @@ Your collaborator at the museum requires the giant penguin dataset to be broken 
 
 In words, describe what are the steps to solve the challenge: 
 
-- filter by year
-- write csv to seperate years
+- 
+- 
 - 
 
 How would you solve this problem using existing knowledge: 
 
-- filter 
-- write csv
+- split penguins_combined and assign
+- get out the years and made a df of year file name
+- map2 to write csv
 - 
 
 Try solving this in R using new skills:
 
 ```{r, learner-solutions}
-library(dplyr)
+split_data <- 
+  penguins_combined |>
+  split(~year)
+
+year_file_names <- paste(names(split_data), "penguins.csv", sep = "_")
+
+map2(split_data, year_file_names, ~write_csv(.x, file =.y))
 
 
-penguins_combined <- list.files("data/penguin_distributions/",
-                            pattern = ".csv", full.names = TRUE)|>
-  map(read_csv, show_col_types = FALSE) |>
-  list_rbind()
+
+walk(split_data, write_csv, file = "output/tmp.csv")
+
+
+walk2(split_data, year_file_names, write_csv)
+
+map2(split_data, year_file_names, @function(x,y) write_csv(x, file =y))
 
 
 
-
-  filter(penguins_combined, year == 2015)
-split(penguins_combined, year(unique(uniq)))
-
-  
-uniq<- unique(penguins_combined$year) %>% 
-  sort() 
-
-%>% 
-  map(penguins_combined, year)
 
 
   
@@ -430,7 +452,40 @@ How would you solve this problem using existing knowledge:
 Now let's use our new skills to make lots of plots!
 
 ```{r}
+af <- read_csv("data/penguin_distributions/Aptenodytes forsteri.csv")
 
+# Get world map data
+world_map <- map_data("world")
+
+af$countdatapresent <- case_when (af$individualCount > 0 ~ "Count data present", .default = "No count data")
+
+#mostly from chagpt:
+# Create a ggplot object
+ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(color = "white") + # Fill the regions and outline with white
+  scale_fill_viridis_d() + # Use a viridis color scale for regions
+  theme_minimal() + # Apply a minimal theme
+  theme(
+    panel.background = element_rect(fill = "lightblue"),
+    # Light blue background
+    panel.grid.major = element_blank(),
+    # Remove major grid lines
+    panel.grid.minor = element_blank(),
+    # Remove minor grid lines
+    axis.title = element_blank(),
+    # Remove axis titles
+    axis.text = element_blank(),
+    # Remove axis text
+    axis.ticks = element_blank() # Remove the legend
+  ) +
+  coord_fixed(1.3) +
+  geom_point(data = af,
+             aes(
+               x = decimalLongitude,
+               y = decimalLatitude,
+               group = NA,
+               col = countdatapresent
+             ))# Ensure the aspect ratio is correct
 ```
 
 Demonstrator solutions: 
@@ -445,7 +500,7 @@ Demonstrator solutions:
 
 In your analyses, sometimes you need to fit one complex model, other times you might be fitting many seperate models. How do we do that efficiently?
 
-You been asked to fit a linear model between log_count and latitude, for each speces. Fit the models and extract the r2 for each model fit.
+You been asked to fit a linear model between log_count and latitude, for each species. Fit the models and extract the r2 for each model fit.
 
 In words, describe what are the steps to solve the challenge: 
 
@@ -462,6 +517,10 @@ How would you solve this problem using existing knowledge:
 Try solving this in R using new skills:
 
 ```{r, learner-solutions}
+
+species_pen
+
+lm(log(num_obs))~d
 
 ```
 
